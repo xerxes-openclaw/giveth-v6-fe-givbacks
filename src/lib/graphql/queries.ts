@@ -729,3 +729,85 @@ export const donationsByUserQuery = graphql(`
     }
   }
 `)
+
+// =============================================================
+// GIVbacks Verification Form Queries
+// NOTE: These use raw GraphQL strings (not the codegen wrapper)
+// because the backend schema types for verification are not yet
+// in our generated types. Run `pnpm codegen` locally after
+// merging to generate proper TypeScript types.
+// =============================================================
+
+export const GET_CURRENT_PROJECT_VERIFICATION_FORM = `
+  query GetCurrentProjectVerificationForm($slug: String!) {
+    getCurrentProjectVerificationForm(slug: $slug) {
+      id
+      status
+      lastStep
+      isTermAndConditionsAccepted
+      email
+      personalInfo {
+        email
+        walletAddress
+        fullName
+      }
+      socialProfiles {
+        id
+        name
+        socialNetwork
+        socialNetworkId
+        isVerified
+      }
+      projectRegistry {
+        organizationDescription
+        isNonProfitOrganization
+        organizationCountry
+        organizationWebsite
+        organizationName
+        attachments
+      }
+      projectContacts {
+        name
+        url
+      }
+      milestones {
+        mission
+        foundationDate
+        achievedMilestones
+        achievedMilestonesProofs
+        problem
+        plans
+        impact
+      }
+      managingFunds {
+        description
+        relatedAddresses {
+          address
+          networkId
+          chainType
+          title
+        }
+      }
+      project {
+        id
+        slug
+        title
+      }
+      user {
+        id
+        walletAddress
+        firstName
+        lastName
+        email
+      }
+    }
+  }
+`
+
+export const GET_ALLOWED_COUNTRIES = `
+  query GetAllowedCountries {
+    getAllowedCountries {
+      name
+    }
+  }
+`

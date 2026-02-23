@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
+import { type Route } from 'next'
 import { PassportBanner } from '@/components/PassportBanner'
 import { AboutTab } from '@/components/project/AboutTab'
 import { AllTimeDonations } from '@/components/project/AllTimeDonations'
@@ -12,6 +14,8 @@ import { ProjectPageBadges } from '@/components/project/ProjectPageBadges'
 import { ProjectTabs } from '@/components/project/ProjectTabs'
 import { QFRoundSidebar } from '@/components/project/QFRoundSidebar'
 import { UpdatesTab } from '@/components/project/UpdatesTab'
+import { Button } from '@/components/ui/button'
+import { useSiweAuth } from '@/context/AuthContext'
 import {
   type ProjectBySlugQuery,
   type ProjectEntity,
@@ -56,12 +60,59 @@ export function ProjectPageView({
   >(undefined)
   const projectId = project?.id ? parseInt(project.id) : undefined
 
+  // Owner detection for GIVbacks button
+  const { walletAddress, isAuthenticated } = useSiweAuth()
+  const ownerAddress = project.adminUser?.wallets?.[0]?.address
+  const isOwner =
+    isAuthenticated &&
+    !!walletAddress &&
+    !!ownerAddress &&
+    walletAddress.toLowerCase() === ownerAddress.toLowerCase()
+
   return (
     <div className="min-h-screen bg-giv-neutral-200">
       <PassportBanner />
 
       <main className="max-w-7xl mx-auto py-8 px-4 md-px-0">
         <ProjectPageBadges project={project as unknown as ProjectEntity} />
+
+        {/* Owner-only: GIVbacks application banner */}
+        {isOwner && !isPreview && !project.isGivbacksEligible && (
+          <div className="mb-4 flex items-center justify-between rounded-xl border border-giv-brand-100 bg-giv-brand-50 px-5 py-3">
+            <div>
+              <p className="text-sm font-medium text-giv-brand-700">
+                Your project is not yet GIVbacks eligible.
+              </p>
+              <p className="text-xs text-giv-brand-600 mt-0.5">
+                Apply to reward donors with GIV tokens.
+              </p>
+            </div>
+            <Button asChild size="sm" className="ml-4 shrink-0">
+              <Link href={`/project/${project.slug}/givbacks` as Route}>
+                Apply for GIVbacks
+              </Link>
+            </Button>
+          </div>
+        )}
+
+        {/* Owner-only: already eligible, but can reapply */}
+        {isOwner && !isPreview && project.isGivbacksEligible && (
+          <div className="mb-4 flex items-center justify-between rounded-xl border border-emerald-100 bg-emerald-50 px-5 py-3">
+            <div>
+              <p className="text-sm font-medium text-emerald-700">
+                ✅ Your project is GIVbacks eligible.
+              </p>
+              <p className="text-xs text-emerald-600 mt-0.5">
+                Donors earn GIV tokens when they donate to your project.
+              </p>
+            </div>
+            <Button asChild size="sm" variant="outline" className="ml-4 shrink-0">
+              <Link href={`/project/${project.slug}/givbacks` as Route}>
+                View / Update Application
+              </Link>
+            </Button>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[2fr_1fr] mb-6">
           <div className="flex flex-col gap-6">
