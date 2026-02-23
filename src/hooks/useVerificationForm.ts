@@ -124,8 +124,6 @@ export function useAllowedCountries() {
 // Initialises the form (creates or loads existing) and returns helpers.
 // ---------------------------------------------------------------------------
 export function useVerificationFormInit(slug: string) {
-  const queryClient = useQueryClient()
-
   const {
     data: existingForm,
     isLoading: isLoadingForm,

@@ -187,15 +187,13 @@ export function GivbacksApplicationForm() {
       )}
 
       {/* Step content */}
-      <div className="bg-white rounded-2xl shadow-sm border border-giv-neutral-200 p-6 md:p-8">
+      <div className="relative bg-white rounded-2xl shadow-sm border border-giv-neutral-200 p-6 md:p-8">
         {isBusy && (
           <div className="absolute inset-0 bg-white/60 flex items-center justify-center z-10 rounded-2xl">
             <Loader2 className="w-6 h-6 animate-spin text-giv-brand-500" />
           </div>
         )}
-        <div className="relative">
-          <StepContent step={state.currentStep} />
-        </div>
+        <StepContent step={state.currentStep} />
       </div>
     </div>
   )
